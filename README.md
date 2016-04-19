@@ -1,7 +1,7 @@
 ![MEMBRANE](/logo.png)
 ## Neural Network model with spiking neurons with binary axon
 
-<b>Membrane/b> is a c++ implementation of a neural network model compatible with Singularity decentralized optimization exhibiting:
+<b>Membrane</b> is a c++ implementation of a neural network model compatible with Singularity decentralized optimization exhibiting:
 <ul>
 <li>
 Axon spike train propagation
