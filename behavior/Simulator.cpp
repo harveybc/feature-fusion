@@ -4,7 +4,7 @@
  * 
  * Created on 21 de junio de 2015, 02:51 AM
  */
-
+// TODO: verificar si funciona fractal machine o removerla
 #include "Simulator.h"
 
 void Simulator::normalize(float max_vol, float min_vol){
