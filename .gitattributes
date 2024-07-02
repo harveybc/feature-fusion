@@ -1,9 +1,0 @@
-*.html linguist-language=C++
-*.js linguist-language=C++
-*.css linguist-language=C++
-*.h linguist-language=C++
-*.htm linguist-language=C++
-*.xml linguist-language=C++
-*.ini linguist-language=C++
-*.md linguist-language=C++
-
