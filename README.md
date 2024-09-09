@@ -96,35 +96,36 @@ usage: feature-fusion.bat tests\data\merged_feature_data.csv
 
 #### Required Arguments
 
-- `input_file` (str): Path to the input CSV file.
+- `--input_files` (list[str]): Paths to the input CSV files from different feature-extractors to be merged. This argument allows multiple input files to be concatenated horizontally based on their columns.
 
 #### Optional Arguments
 
-- `-of, --output_file` (str): Path to the output CSV file.
-- `-se, --save_encoder` (str): Filename to save the trained encoder model.
-- `-sd, --save_decoder` (str): Filename to save the trained decoder model.
-- `-le, --load_encoder` (str): Filename to load encoder parameters from.
-- `-ld, --load_decoder` (str): Filename to load decoder parameters from.
-- `-ee, --evaluate_encoder` (str): Filename for outputting encoder evaluation results.
-- `-ed, --evaluate_decoder` (str): Filename for outputting decoder evaluation results.
-- `-ep, --encoder_plugin` (str, default='default'): Name of the encoder plugin to use.
-- `-dp, --decoder_plugin` (str, default='default'): Name of the decoder plugin to use.
-- `-ws, --window_size` (int): Sliding window size to use for processing time series data.
-- `-me, --threshold_error` (float): MSE error threshold to stop the training processes.
-- `-is, --initial_size` (int): Initial size of the encoder/decoder interface.
-- `-ss, --step_size` (int): Step size to adjust the size of the encoder/decoder interface.
-- `-rl, --remote_log` (str): URL of a remote API endpoint for saving debug variables in JSON format.
-- `-rlc, --remote_load_config` (str): URL of a remote JSON configuration file to download and execute.
-- `-rsc, --remote_save_config` (str): URL of a remote API endpoint for saving configuration in JSON format.
-- `-u, --username` (str): Username for the API endpoint.
-- `-p, --password` (str): Password for the API endpoint.
-- `-lc, --load_config` (str): Path to load a configuration file.
-- `-sc, --save_config` (str): Path to save the current configuration.
-- `-sl, --save_log` (str): Path to save the current debug info.
-- `-qm, --quiet_mode` (flag): Suppress output messages.
-- `-fd, --force_date` (flag): Include date in the output CSV files.
-- `-inc, --incremental_search` (flag): Enable incremental search for interface size.
-- `-hdr, --headers` (flag): Indicate if the CSV file has headers.
+- `--output_file` (str): Path to the output CSV file after fusion and dimensionality reduction.
+- `--save_encoder` (str): Filename to save the trained encoder model after the autoencoder training is complete.
+- `--save_decoder` (str): Filename to save the trained decoder model after the autoencoder training is complete.
+- `--load_encoder` (str): Filename to load the encoder parameters from a pre-trained model.
+- `--load_decoder` (str): Filename to load the decoder parameters from a pre-trained model.
+- `--evaluate_encoder` (str): Filename for saving the encoder evaluation results on the input data.
+- `--evaluate_decoder` (str): Filename for saving the decoder evaluation results on the input data.
+- `--encoder_plugin` (str, default='default'): Name of the encoder plugin to use (e.g., CNN, ANN, LSTM, etc.).
+- `--decoder_plugin` (str, default='default'): Name of the decoder plugin to use (e.g., CNN, ANN, LSTM, etc.).
+- `--window_size` (int): Sliding window size for processing time-series data (applicable for time-series data processing).
+- `--threshold_error` (float): Mean squared error (MSE) threshold to stop the training process once the error is below this value.
+- `--initial_size` (int): Initial size of the encoder/decoder interface (i.e., latent space size) when starting the dimensionality reduction process.
+- `--step_size` (int): Step size for adjusting the encoder/decoder interface during incremental or decremental search.
+- `--remote_log` (str): URL of a remote API endpoint for saving debug variables and logging training results in JSON format.
+- `--remote_load_config` (str): URL of a remote JSON configuration file that will be downloaded and executed during the process.
+- `--remote_save_config` (str): URL of a remote API endpoint for saving the configuration in JSON format after it has been executed.
+- `--username` (str): Username required for API endpoint authentication (if needed).
+- `--password` (str): Password required for API endpoint authentication (if needed).
+- `--load_config` (str): Path to load a configuration file from disk, containing all necessary parameters for the fusion and autoencoder process.
+- `--save_config` (str): Path to save the current configuration after the process completes.
+- `--save_log` (str): Path to save the current debug information (e.g., logs, intermediate results).
+- `--quiet_mode` (flag): Suppresses output messages and minimizes terminal logging during execution.
+- `--force_date` (flag): Force inclusion of the date in the output CSV files, typically for time-series data outputs.
+- `--incremental_search` (flag): Enables or disables incremental search for adjusting the size of the encoder/decoder interface (latent space). If disabled, the system performs decremental search.
+- `--headers` (flag): Indicates whether the CSV input files contain headers. If present, headers will be preserved in the output file.
+
 
 ### Examples of Use
 
