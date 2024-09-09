@@ -1,5 +1,6 @@
 import numpy as np
 from keras.models import Model, load_model
+from keras.optimizers import Adam
 
 class AutoencoderManager:
     def __init__(self, encoder_plugin, decoder_plugin):
@@ -10,7 +11,7 @@ class AutoencoderManager:
         self.decoder_model = None
         print(f"[AutoencoderManager] Initialized with encoder plugin and decoder plugin")
 
-    def build_autoencoder(self, input_shape, interface_size):
+    def build_autoencoder(self, input_shape, interface_size, config):
         try:
             print("[build_autoencoder] Starting to build autoencoder...")
             
@@ -31,14 +32,21 @@ class AutoencoderManager:
             # Build autoencoder model
             autoencoder_output = self.decoder_model(self.encoder_model.output)
             self.autoencoder_model = Model(inputs=self.encoder_model.input, outputs=autoencoder_output, name="autoencoder")
-            self.autoencoder_model.compile(optimizer='adam', loss='mean_squared_error')
+            adam_optimizer = Adam(
+                learning_rate= config['learning_rate'],   # Set the learning rate
+                beta_1=0.9,            # Default value
+                beta_2=0.999,          # Default value
+                epsilon=1e-7,          # Default value
+                amsgrad=False          # Default value
+            )
+            self.autoencoder_model.compile(optimizer=adam_optimizer, loss='mae')
             print("[build_autoencoder] Autoencoder model built and compiled successfully")
             self.autoencoder_model.summary()
         except Exception as e:
             print(f"[build_autoencoder] Exception occurred: {e}")
             raise
 
-    def train_autoencoder(self, data, epochs=10, batch_size=256):
+    def train_autoencoder(self, data, epochs=100, batch_size=32):
         try:
             if isinstance(data, tuple):
                 data = data[0]
@@ -78,15 +86,31 @@ class AutoencoderManager:
         print(f"[load_decoder] Decoder model loaded from {file_path}")
 
     def calculate_mse(self, original_data, reconstructed_data):
+        # print the shapes of the original data and the reconstructed_data
+        print(f"[calculate_mse] Original data shape: {original_data.shape}")
+        print(f"[calculate_mse] Reconstructed data shape: {reconstructed_data.shape}")
+        #if isinstance(original_data, tuple):
+        #    original_data = original_data[1] 
+        #if isinstance(reconstructed_data, tuple):
+        #    reconstructed_data = reconstructed_data[1]
+
         original_data = original_data.reshape((original_data.shape[0], -1))
         reconstructed_data = reconstructed_data.reshape((original_data.shape[0], -1))
+        print(f"[calculate_mse] Original data shape after reshaping: {original_data.shape}")
+        print(f"[calculate_mse] Reconstructed data shape after reshaping: {reconstructed_data.shape}")
+        
         mse = np.mean(np.square(original_data - reconstructed_data))
         print(f"[calculate_mse] Calculated MSE: {mse}")
         return mse
 
     def calculate_mae(self, original_data, reconstructed_data):
+        # print the shapes of the original data and the reconstructed_data
+        print(f"[calculate_mae] Original data shape: {original_data.shape}")
+        print(f"[calculate_mae] Reconstructed data shape: {reconstructed_data.shape}")
         original_data = original_data.reshape((original_data.shape[0], -1))
         reconstructed_data = reconstructed_data.reshape((original_data.shape[0], -1))
+        print(f"[calculate_mae] Original data shape after reshaping: {original_data.shape}")
+        print(f"[calculate_mae] Reconstructed data shape after reshaping: {reconstructed_data.shape}")
         mae = np.mean(np.abs(original_data - reconstructed_data))
         print(f"[calculate_mae] Calculated MAE: {mae}")
         return mae
