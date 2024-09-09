@@ -1,26 +1,52 @@
 import argparse
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Predictor: A tool for timeseries prediction with plugin support.")
-    parser.add_argument('input_file', type=str, help='Path to the input CSV file.')
-    parser.add_argument('-it', '--input_timeseries', type=int, help='Index of the target column in the input CSV file.')
-    parser.add_argument('-tc', '--target_column', type=int, help='If used, assumes no input_timeseries is used but the input_timeseries is a target column in the intput CSV file, in all cases, each row in the inpit_csv must correspond with the exact tick time of the timeseries.')
-    parser.add_argument('-of', '--output_file', type=str, help='Path to the output CSV file.')
-    parser.add_argument('-sm', '--save_model', type=str, help='Filename to save the trained predictor model.')
-    parser.add_argument('-lm', '--load_model', type=str, help='Filename to load a trained predictor model from (does not perform training, jues evalate input data).')
-    parser.add_argument('-ef', '--evaluate_file', type=str, help='Filename for outputting loaded model evaluation results.')
-    parser.add_argument('-pl', '--plugin', type=str, default='default', help='Name of the encoder plugin to use.')
-    parser.add_argument('-th', '--time_horizon', type=int, help='Number of ticks ahead to predict.')
-    parser.add_argument('-te', '--threshold_error', type=float, help='MSE error threshold to stop the training process.')
-    parser.add_argument('-rl', '--remote_log', type=str, help='URL of a remote API endpoint for saving debug variables in JSON format.')
-    parser.add_argument('-rlc', '--remote_load_config', type=str, help='URL of a remote JSON configuration file to download and execute.')
-    parser.add_argument('-rsc', '--remote_save_config', type=str, help='URL of a remote API endpoint for saving configuration in JSON format.')
-    parser.add_argument('-u', '--username', type=str, help='Username for the API endpoint.')
-    parser.add_argument('-p', '--password', type=str, help='Password for Username for the API endpoint.')
-    parser.add_argument('-lc', '--load_config', type=str, help='Path to load a configuration file.')
-    parser.add_argument('-sc', '--save_config', type=str, help='Path to save the current configuration.')
-    parser.add_argument('-sl', '--save_log', type=str, help='Path to save the current debug info.')
-    parser.add_argument('-qm', '--quiet_mode', action='store_true', help='Suppress output messages.')
-    parser.add_argument('-fd', '--force_date', action='store_true', help='Include date in the output CSV files.')
-    parser.add_argument('-hdr', '--headers', action='store_true', help='Indicate if the CSV file has headers.')
+    parser = argparse.ArgumentParser(description="Feature-fusion: A tool for merging datasets and reducing dimensionality with autoencoders, supporting dynamic plugins.")
+    
+    # Updated to input_files
+    parser.add_argument('--input_files', nargs='+', type=str, help='Paths to the input CSV files to be merged.')
+
+    parser.add_argument('--validation_file', type=str, help='Path to the input CSV file used to test the trained autoencoder.')
+    
+    # Retained optional arguments
+    parser.add_argument('--output_file', type=str, help='Path to the output CSV file.')
+    parser.add_argument('--save_encoder', type=str, help='Filename to save the trained encoder model.')
+    parser.add_argument('--save_decoder', type=str, help='Filename to save the trained decoder model.')
+    parser.add_argument('--load_encoder', type=str, help='Filename to load encoder parameters from.')
+    parser.add_argument('--load_decoder', type=str, help='Filename to load decoder parameters from.')
+    parser.add_argument('--evaluate_encoder', type=str, help='Filename for outputting encoder evaluation results.')
+    parser.add_argument('--evaluate_decoder', type=str, help='Filename for outputting decoder evaluation results.')
+    
+    # Plugins
+    parser.add_argument('--encoder_plugin', type=str, help='Name of the encoder plugin to use (e.g., CNN, ANN, LSTM, etc.).')
+    parser.add_argument('--decoder_plugin', type=str, help='Name of the decoder plugin to use (e.g., CNN, ANN, LSTM, etc.).')
+    
+    # Time series processing
+    parser.add_argument('--window_size', type=int, help='Sliding window size to use for processing time series data.')
+    
+    # Training settings
+    parser.add_argument('--threshold_error', type=float, help='MSE error threshold to stop the training process.')
+    parser.add_argument('--initial_size', type=int, help='Initial size of the encoder/decoder interface (latent space size).')
+    parser.add_argument('--step_size', type=int, help='Step size to adjust the encoder/decoder interface during incremental or decremental search.')
+    
+    # Remote logging and configurations
+    parser.add_argument('--remote_log', type=str, help='URL of a remote API endpoint for saving debug variables in JSON format.')
+    parser.add_argument('--remote_load_config', type=str, help='URL of a remote JSON configuration file to download and execute.')
+    parser.add_argument('--remote_save_config', type=str, help='URL of a remote API endpoint for saving the configuration in JSON format.')
+    
+    # Authentication
+    parser.add_argument('--username', type=str, help='Username for the API endpoint.')
+    parser.add_argument('--password', type=str, help='Password for the API endpoint.')
+    
+    # Configuration and logging
+    parser.add_argument('--load_config', type=str, help='Path to load a configuration file from disk.')
+    parser.add_argument('--save_config', type=str, help='Path to save the current configuration.')
+    parser.add_argument('--save_log', type=str, help='Path to save the current debug info (logs, intermediate results).')
+
+    # Miscellaneous
+    parser.add_argument('--quiet_mode', action='store_true', help='Suppress output messages and minimize terminal logging during execution.')
+    parser.add_argument('--force_date', action='store_true', help='Force inclusion of the date in the output CSV files.')
+    parser.add_argument('--incremental_search', action='store_true', help='Enable incremental search for adjusting the encoder/decoder interface (latent space).')
+    parser.add_argument('--headers', action='store_true', help='Indicate if the CSV input files contain headers.')
+
     return parser.parse_known_args()
