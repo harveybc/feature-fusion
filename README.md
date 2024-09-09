@@ -100,7 +100,8 @@ usage: feature-fusion.bat tests\data\merged_feature_data.csv
 
 #### Optional Arguments
 
-- `--output_file` (str): Path to the output CSV file after fusion and dimensionality reduction.
+- `--validation_file` (str): Path to the input CSV file used to test the trained autoencoder.
+- `--output_file` (str): Path to the output CSV of the reconstructed dataset.
 - `--save_encoder` (str): Filename to save the trained encoder model after the autoencoder training is complete.
 - `--save_decoder` (str): Filename to save the trained decoder model after the autoencoder training is complete.
 - `--load_encoder` (str): Filename to load the encoder parameters from a pre-trained model.
@@ -125,6 +126,7 @@ usage: feature-fusion.bat tests\data\merged_feature_data.csv
 - `--force_date` (flag): Force inclusion of the date in the output CSV files, typically for time-series data outputs.
 - `--incremental_search` (flag): Enables or disables incremental search for adjusting the size of the encoder/decoder interface (latent space). If disabled, the system performs decremental search.
 - `--headers` (flag): Indicates whether the CSV input files contain headers. If present, headers will be preserved in the output file.
+
 
 
 ### Examples of Use
