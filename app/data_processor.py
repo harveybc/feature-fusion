@@ -25,26 +25,55 @@ def create_sliding_windows(data, window_size):
 
     return pd.DataFrame(windows)
 
+import numpy as np
+
 def process_data(config):
-    print(f"Loading data from CSV file: {config['input_file']}")
-    data = load_csv(config['input_file'], headers=config['headers'])
-    print(f"Data loaded with shape: {data.shape}")
+    """
+    Process multiple datasets and validation datasets by loading them from CSV files and returning
+    windows of shape (sequence_length, num_channels), where:
+    - sequence_length: the number of features (columns) in each dataset.
+    - num_channels: the number of datasets.
+    
+    The output is compatible with Conv1D, omitting the batch size.
 
-    window_size = config['window_size']
-    print(f"Applying sliding window of size: {window_size}")
-    windowed_data = create_sliding_windows(data, window_size)
-    print(f"Windowed data shape: {windowed_data.shape}")
+    Args:
+        config (dict): Configuration dictionary with file paths, headers, and other settings.
 
-    # now do the same for the csv filename in the config validation_file  parameter
-    print(f"Loading validation data from CSV file: {config['validation_file']}")
-    validation_data = load_csv(config['validation_file'], headers=config['headers'])
-    print(f"Validation data loaded with shape: {validation_data.shape}")
-    windowed_validation_data = create_sliding_windows(validation_data, window_size)
-    print(f"Windowed validation data shape: {windowed_validation_data.shape}")
+    Returns:
+        tuple:
+            - processed_data (dict): A dictionary where each key is a column name, and each value is
+              an array of shape (sequence_length, num_channels).
+            - validation_data (dict): A dictionary where each key is a column name, and each value is
+              an array of shape (sequence_length, num_channels).
+    """
+    
+    # Load the datasets and validation datasets
+    print(f"Loading data from CSV files: {config['input_files']}")
+    datasets, validation_datasets = load_csv_files(config['input_files'], config['validation_file_paths'], headers=config['headers'])
+    
+    # Assume all datasets have the same number of rows and columns
+    num_datasets = len(datasets)  # This will be the number of channels
+    num_columns = datasets[0].shape[1]  # This will be the sequence length
 
-    processed_data = {col: windowed_data.values for col in data.columns}
-    validation_data = {col: windowed_validation_data.values for col in validation_data.columns}
+    print(f"Number of datasets (channels): {num_datasets}, Number of features (sequence_length): {num_columns}")
+
+    # Initialize dictionaries to hold processed data and validation data
+    processed_data = {}
+    validation_data = {}
+
+    # Stack the datasets to create windows with multiple channels (stacked along the last axis)
+    for col in range(num_columns):
+        # Stack the column values from each dataset for the current column across all datasets
+        processed_data[f'col_{col}'] = np.stack([dataset.iloc[:, col].values for dataset in datasets], axis=-1)
+    
+    # Stack the validation datasets in the same way if they exist
+    if validation_datasets:
+        print(f"Processing validation datasets with shape: {validation_datasets[0].shape} and number of validation datasets: {len(validation_datasets)}")
+        for col in range(num_columns):
+            validation_data[f'col_{col}'] = np.stack([validation_dataset.iloc[:, col].values for validation_dataset in validation_datasets], axis=-1)
+
     return processed_data, validation_data
+
 
 def run_autoencoder_pipeline(config, encoder_plugin, decoder_plugin):
     start_time = time.time()

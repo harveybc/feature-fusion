@@ -6,7 +6,7 @@ def parse_args():
     # Updated to input_files
     parser.add_argument('--input_files', nargs='+', type=str, help='Paths to the input CSV files to be merged.')
 
-    parser.add_argument('--validation_file', type=str, help='Path to the input CSV file used to test the trained autoencoder.')
+    parser.add_argument('--validation_files', type=str, help='Path to the input CSV files used to test the trained autoencoder.')
     
     # Retained optional arguments
     parser.add_argument('--output_file', type=str, help='Path to the output CSV file.')

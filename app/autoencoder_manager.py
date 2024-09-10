@@ -12,10 +12,13 @@ class AutoencoderManager:
         print(f"[AutoencoderManager] Initialized with encoder plugin and decoder plugin")
 
     def build_autoencoder(self, input_shape, interface_size, config):
+        """
+        Build the autoencoder model, which takes 3D data as input (sequence_length, num_channels).
+        """
         try:
             print("[build_autoencoder] Starting to build autoencoder...")
             
-            # Configure encoder and decoder sizes
+            # Configure encoder and decoder sizes to handle 3D data (sequence_length, num_channels)
             self.encoder_plugin.configure_size(input_shape, interface_size)
             self.decoder_plugin.configure_size(interface_size, input_shape)
             
@@ -32,6 +35,8 @@ class AutoencoderManager:
             # Build autoencoder model
             autoencoder_output = self.decoder_model(self.encoder_model.output)
             self.autoencoder_model = Model(inputs=self.encoder_model.input, outputs=autoencoder_output, name="autoencoder")
+            
+            # Compile the autoencoder model
             adam_optimizer = Adam(
                 learning_rate= config['learning_rate'],   # Set the learning rate
                 beta_1=0.9,            # Default value
@@ -47,10 +52,13 @@ class AutoencoderManager:
             raise
 
     def train_autoencoder(self, data, epochs=100, batch_size=32):
+        """
+        Train the autoencoder with 3D input data (sequence_length, num_channels).
+        No reshaping required.
+        """
         try:
-            if isinstance(data, tuple):
-                data = data[0]
             print(f"[train_autoencoder] Training autoencoder with data shape: {data.shape}")
+            # Training the autoencoder
             self.autoencoder_model.fit(data, data, epochs=epochs, batch_size=batch_size, verbose=1)
             print("[train_autoencoder] Training completed.")
         except Exception as e:
@@ -58,12 +66,18 @@ class AutoencoderManager:
             raise
 
     def encode_data(self, data):
+        """
+        Encode the 3D data (sequence_length, num_channels).
+        """
         print(f"[encode_data] Encoding data with shape: {data.shape}")
         encoded_data = self.encoder_model.predict(data)
         print(f"[encode_data] Encoded data shape: {encoded_data.shape}")
         return encoded_data
 
     def decode_data(self, encoded_data):
+        """
+        Decode the encoded 3D data (sequence_length, num_channels).
+        """
         print(f"[decode_data] Decoding data with shape: {encoded_data.shape}")
         decoded_data = self.decoder_model.predict(encoded_data)
         print(f"[decode_data] Decoded data shape: {decoded_data.shape}")
@@ -86,16 +100,16 @@ class AutoencoderManager:
         print(f"[load_decoder] Decoder model loaded from {file_path}")
 
     def calculate_mse(self, original_data, reconstructed_data):
-        # print the shapes of the original data and the reconstructed_data
+        """
+        Calculate MSE for 3D data (sequence_length, num_channels).
+        Flatten only the sequence_length and channel dimensions to compare the original and reconstructed data.
+        """
         print(f"[calculate_mse] Original data shape: {original_data.shape}")
         print(f"[calculate_mse] Reconstructed data shape: {reconstructed_data.shape}")
-        #if isinstance(original_data, tuple):
-        #    original_data = original_data[1] 
-        #if isinstance(reconstructed_data, tuple):
-        #    reconstructed_data = reconstructed_data[1]
 
+        # Reshape both original and reconstructed data to (sequence_length * num_channels, )
         original_data = original_data.reshape((original_data.shape[0], -1))
-        reconstructed_data = reconstructed_data.reshape((original_data.shape[0], -1))
+        reconstructed_data = reconstructed_data.reshape((reconstructed_data.shape[0], -1))
         print(f"[calculate_mse] Original data shape after reshaping: {original_data.shape}")
         print(f"[calculate_mse] Reconstructed data shape after reshaping: {reconstructed_data.shape}")
         
@@ -104,13 +118,19 @@ class AutoencoderManager:
         return mse
 
     def calculate_mae(self, original_data, reconstructed_data):
-        # print the shapes of the original data and the reconstructed_data
+        """
+        Calculate MAE for 3D data (sequence_length, num_channels).
+        Flatten only the sequence_length and channel dimensions to compare the original and reconstructed data.
+        """
         print(f"[calculate_mae] Original data shape: {original_data.shape}")
         print(f"[calculate_mae] Reconstructed data shape: {reconstructed_data.shape}")
+        
+        # Reshape both original and reconstructed data to (sequence_length * num_channels, )
         original_data = original_data.reshape((original_data.shape[0], -1))
-        reconstructed_data = reconstructed_data.reshape((original_data.shape[0], -1))
+        reconstructed_data = reconstructed_data.reshape((reconstructed_data.shape[0], -1))
         print(f"[calculate_mae] Original data shape after reshaping: {original_data.shape}")
         print(f"[calculate_mae] Reconstructed data shape after reshaping: {reconstructed_data.shape}")
+        
         mae = np.mean(np.abs(original_data - reconstructed_data))
         print(f"[calculate_mae] Calculated MAE: {mae}")
         return mae
