@@ -1,12 +1,18 @@
 # timeseries-gan (package: `tsg`)
 
-> **⚠️ SUPERSEDED — this repository is legacy and no longer maintained (last substantive commit: 2025-06-21).**
+> **SUPERSEDED: this repository is retained as a historical implementation.**
 >
 > Synthetic time-series generation now lives in [harveybc/synthetic-datagen](https://github.com/harveybc/synthetic-datagen), which owns the `sdg` CLI and the "Synthetic Data Generator" name.
 >
 > Use synthetic-datagen for any new work. This repository is retained for historical reference only and is not required by any current deployment.
 
 ## What this was
+
+For the current relationships between synthetic controls, preprocessing and
+representation learning, see the
+[research repository map](https://github.com/harveybc/predictor/blob/master/docs/RESEARCH_STACK.md).
+Documentation has been refreshed without presenting this legacy implementation
+as the current experimental platform.
 
 A plugin-based framework for training a Sequential Conditional VAE-GAN
 (SC-VAE-GAN) on multi-feature financial time series and generating synthetic
